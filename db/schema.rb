@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_19_200920) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_21_145005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -27,7 +27,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_200920) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["name"], name: "index_roles_on_name", unique: true
+    t.index ["user_id"], name: "index_roles_on_user_id"
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -42,13 +44,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_200920) do
     t.string "nickname", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "role_id", null: false
     t.index ["nickname"], name: "index_users_on_nickname", unique: true
-    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
   add_foreign_key "executions", "tasks"
   add_foreign_key "executions", "users"
+  add_foreign_key "roles", "users"
   add_foreign_key "tasks", "roles"
-  add_foreign_key "users", "roles"
 end

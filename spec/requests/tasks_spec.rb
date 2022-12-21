@@ -1,16 +1,20 @@
 require "rails_helper"
 
 describe "/tasks" do
+  let(:user) { create(:user) }
+  let(:role) { create(:role, user_id: user.id) }
+
   let(:valid_params) {
     {
       name: "Do something",
-      role_id: create(:role).id
+      role_id: role.id,
     }
   }
 
   let(:invalid_params) {
     {
-      name: ""
+      name: "",
+      role_id: nil,
     }
   }
 

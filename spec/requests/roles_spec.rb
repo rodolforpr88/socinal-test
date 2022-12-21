@@ -3,13 +3,13 @@ require "rails_helper"
 describe "/roles" do
   let(:valid_params) {
     {
-      name: "user.edit"
+      user: user.attributes.merge(roles_attributes: attributes_for(:role, id: nil)),
     }
   }
 
   let(:invalid_params) {
     {
-      name: ""
+      user: user.attributes.merge(roles_attributes: { name: nil, id: nil }),
     }
   }
 
@@ -17,7 +17,7 @@ describe "/roles" do
 
   describe "GET /show" do
     it "returns a successful response" do
-      get user_role_path(user)
+      get user_path(user)
       expect(response).to be_successful
     end
   end
@@ -25,31 +25,33 @@ describe "/roles" do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_params) {
-        { name: "user.destroy" }
+        {
+          user: user.attributes.merge(roles_attributes: { name: "user.destroy", id: nil }),
+        }
       }
 
       it "updates the requested record" do
-        patch user_role_path(user), params: { role: new_params }
-        user.role.reload
-        expect(user.role.name).to eq(new_params[:name])
+        patch user_path(user), params: new_params
+        user.roles.first.reload
+        expect(user.roles.first.name).to eq(new_params.dig(:user, :roles_attributes, :name))
       end
 
       it "returns a successful status" do
-        patch user_role_path(user), params: { role: new_params }
-        user.role.reload
+        patch user_path(user), params: new_params
         expect(response).to be_successful
       end
     end
 
     context "with invalid parameters" do
       it "does not updates the record" do
-        patch user_role_path(user), params: { role: invalid_params }
-        user.role.reload
-        expect(user.role.name).not_to eq(invalid_params[:name])
+        patch user_path(user), params: valid_params
+        patch user_path(user), params: invalid_params
+        expect(user.roles.first.name).not_to eq(invalid_params.dig(:user, :roles_attributes, :name))
       end
 
       it "returns an error response status" do
-        patch user_role_path(user), params: { role: invalid_params }
+        patch user_path(user), params: valid_params
+        patch user_path(user), params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
